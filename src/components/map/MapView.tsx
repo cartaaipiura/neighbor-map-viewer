@@ -113,7 +113,7 @@ const MapView: React.FC<MapViewProps> = ({
   };
 
   // Función para configurar la instancia del mapa
-  const setMapRef = (map: L.Map | null) => {
+  const setMapRef = (map: L.Map) => {
     // Verificar que el mapa existe antes de intentar configurarlo
     if (!map) {
       console.log("Referencia de mapa es null");
