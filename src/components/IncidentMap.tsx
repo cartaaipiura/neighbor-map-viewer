@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Incident } from './IncidentCard';
+import { Incident } from './incidents/types';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet-defaulticon-compatibility';
@@ -11,20 +11,6 @@ import LeafletLoader from './map/LeafletLoader';
 import MapView from './map/MapView';
 import MapLoadingIndicator from './map/MapLoadingIndicator';
 import { useMapSetup } from './map/useMapSetup';
-
-// Import React Leaflet components with lazy loading (moved to MapView)
-const MapContainer = React.lazy(() => 
-  import('react-leaflet').then(module => ({ default: module.MapContainer }))
-);
-const TileLayer = React.lazy(() => 
-  import('react-leaflet').then(module => ({ default: module.TileLayer }))
-);
-const Marker = React.lazy(() => 
-  import('react-leaflet').then(module => ({ default: module.Marker }))
-);
-const Popup = React.lazy(() => 
-  import('react-leaflet').then(module => ({ default: module.Popup }))
-);
 
 interface IncidentMapProps {
   incidents: Incident[];
@@ -64,7 +50,7 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
   }
   
   return (
-    <div className={cn("relative rounded-xl overflow-hidden", className)}>
+    <div className={cn("relative rounded-xl overflow-hidden h-full w-full", className)}>
       <LeafletLoader />
       
       {showFilters && (
@@ -76,15 +62,17 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
       
       <MapStyles />
       
-      <MapView 
-        incidents={incidents}
-        filteredIncidents={filteredIncidents}
-        initialPosition={initialPosition}
-        initialZoom={initialZoom}
-        showLegend={showLegend}
-        toggleLegend={toggleLegend}
-        onIncidentClick={handleIncidentClick}
-      />
+      <div className="absolute inset-0">
+        <MapView 
+          incidents={incidents}
+          filteredIncidents={filteredIncidents}
+          initialPosition={initialPosition}
+          initialZoom={initialZoom}
+          showLegend={showLegend}
+          toggleLegend={toggleLegend}
+          onIncidentClick={handleIncidentClick}
+        />
+      </div>
     </div>
   );
 };

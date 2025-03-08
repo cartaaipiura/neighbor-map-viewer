@@ -15,6 +15,8 @@ const LeafletLoader: React.FC = () => {
         link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
         link.crossOrigin = '';
         document.head.appendChild(link);
+        
+        console.log('Leaflet CSS loaded');
       }
     }
   }, []);

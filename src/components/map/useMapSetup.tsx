@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Incident } from '../IncidentCard';
+import { Incident } from '../incidents/types';
 
 export const useMapSetup = (incidents: Incident[]) => {
   const [filteredIncidents, setFilteredIncidents] = useState<Incident[]>(incidents);
@@ -14,9 +14,9 @@ export const useMapSetup = (incidents: Incident[]) => {
     if (typeof window !== 'undefined') {
       // Give time for Leaflet styles to load correctly
       const timer = setTimeout(() => {
+        console.log("Setting map ready state to true");
         setIsMapReady(true);
-        console.log("Mapa listo para renderizar:", true);
-      }, 200);
+      }, 1000); // Increased timeout to ensure resources are loaded
       
       return () => clearTimeout(timer);
     }
@@ -39,6 +39,7 @@ export const useMapSetup = (incidents: Incident[]) => {
     }
     
     setFilteredIncidents(filtered);
+    console.log("Filtered incidents:", filtered.length);
   }, [incidents, selectedCategories, selectedStatuses]);
   
   const handleFiltersChange = (categories: string[], statuses: string[]) => {

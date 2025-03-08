@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
-import { Incident } from '@/components/IncidentCard';
+import { Incident } from '@/components/incidents/types';
 
 // Cargar IncidentMap perezosamente
 const IncidentMap = React.lazy(() => import('@/components/IncidentMap'));
@@ -81,18 +82,18 @@ const Map = () => {
       const timer = setTimeout(() => {
         setIsClientSide(true);
         console.log("Map page: cliente detectado, listo para renderizar");
-      }, 1500); // Aumentamos aún más el tiempo para asegurar que todo esté cargado
+      }, 2000); // Increased timeout to ensure everything is loaded
       
       return () => clearTimeout(timer);
     }
   }, []);
 
   return (
-    <div className="min-h-screen bg-vecino-gray-100/50">
+    <div className="min-h-screen flex flex-col bg-vecino-gray-100/50">
       <Navbar />
       
-      <main className="pt-16 pb-8 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto">
+      <main className="pt-16 pb-8 px-4 md:px-8 flex-grow flex flex-col">
+        <div className="max-w-7xl mx-auto w-full flex-grow flex flex-col">
           {/* Encabezado del mapa */}
           <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
@@ -128,13 +129,14 @@ const Map = () => {
           </div>
           
           {/* Contenedor del mapa */}
-          <div className="bg-white rounded-xl overflow-hidden shadow-subtle border border-vecino-gray-200 h-[calc(100vh-200px)]">
+          <div className="bg-white rounded-xl overflow-hidden shadow-subtle border border-vecino-gray-200 flex-grow" style={{minHeight: '60vh'}}>
             <Suspense fallback={<LoadingIndicator />}>
               {isClientSide ? (
                 <IncidentMap 
                   incidents={mockIncidents} 
                   onIncidentClick={(incident) => setSelectedIncident(incident)}
                   key={`incident-map-${Date.now()}`} // Clave única para forzar re-renderizado
+                  className="h-full w-full"
                 />
               ) : (
                 <LoadingIndicator />
