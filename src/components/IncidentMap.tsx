@@ -160,59 +160,11 @@ interface IncidentMapProps {
   showFilters?: boolean;
 }
 
-const IncidentMap: React.FC<IncidentMapProps> = ({
-  incidents,
-  initialPosition = [40.416775, -3.70379], // Madrid by default
-  initialZoom = 13,
-  onIncidentClick,
-  className,
-  showFilters = true
-}) => {
-  const [filteredIncidents, setFilteredIncidents] = useState<Incident[]>(incidents);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [showLegend, setShowLegend] = useState(true);
-  
-  // Apply filters when they change
-  useEffect(() => {
-    let filtered = [...incidents];
-    
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter((incident) => 
-        selectedCategories.includes(incident.category)
-      );
-    }
-    
-    if (selectedStatuses.length > 0) {
-      filtered = filtered.filter((incident) => 
-        selectedStatuses.includes(incident.status)
-      );
-    }
-    
-    setFilteredIncidents(filtered);
-  }, [incidents, selectedCategories, selectedStatuses]);
-  
-  const handleFiltersChange = (categories: string[], statuses: string[]) => {
-    setSelectedCategories(categories);
-    setSelectedStatuses(statuses);
-  };
-  
-  const handleIncidentClick = (incident: Incident) => {
-    if (onIncidentClick) {
-      onIncidentClick(incident);
-    }
-  };
-  
+// Create a style element for CSS
+const MapStyles = () => {
   return (
-    <div className={cn("relative rounded-xl overflow-hidden", className)}>
-      {showFilters && (
-        <MapFilters 
-          onFiltersChange={handleFiltersChange}
-          className="absolute top-4 left-4 z-[400] max-w-xs"
-        />
-      )}
-      
-      <style jsx global>{`
+    <style>
+      {`
         .custom-marker-icon {
           width: 24px;
           height: 24px;
@@ -269,7 +221,64 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
         .leaflet-popup-tip {
           background-color: white;
         }
-      `}</style>
+      `}
+    </style>
+  );
+};
+
+const IncidentMap: React.FC<IncidentMapProps> = ({
+  incidents,
+  initialPosition = [40.416775, -3.70379], // Madrid by default
+  initialZoom = 13,
+  onIncidentClick,
+  className,
+  showFilters = true
+}) => {
+  const [filteredIncidents, setFilteredIncidents] = useState<Incident[]>(incidents);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [showLegend, setShowLegend] = useState(true);
+  
+  // Apply filters when they change
+  useEffect(() => {
+    let filtered = [...incidents];
+    
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter((incident) => 
+        selectedCategories.includes(incident.category)
+      );
+    }
+    
+    if (selectedStatuses.length > 0) {
+      filtered = filtered.filter((incident) => 
+        selectedStatuses.includes(incident.status)
+      );
+    }
+    
+    setFilteredIncidents(filtered);
+  }, [incidents, selectedCategories, selectedStatuses]);
+  
+  const handleFiltersChange = (categories: string[], statuses: string[]) => {
+    setSelectedCategories(categories);
+    setSelectedStatuses(statuses);
+  };
+  
+  const handleIncidentClick = (incident: Incident) => {
+    if (onIncidentClick) {
+      onIncidentClick(incident);
+    }
+  };
+  
+  return (
+    <div className={cn("relative rounded-xl overflow-hidden", className)}>
+      {showFilters && (
+        <MapFilters 
+          onFiltersChange={handleFiltersChange}
+          className="absolute top-4 left-4 z-[400] max-w-xs"
+        />
+      )}
+      
+      <MapStyles />
       
       <MapContainer
         center={initialPosition}
