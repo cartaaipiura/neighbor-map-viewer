@@ -56,11 +56,11 @@ const mockIncidents: Incident[] = [
 
 const Map = () => {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
-  const [mapReady, setMapReady] = useState(false);
+  const [isClientSide, setIsClientSide] = useState(false);
 
-  // Ensure the map is only rendered client-side
+  // Ensure map is only rendered client-side
   useEffect(() => {
-    setMapReady(true);
+    setIsClientSide(true);
   }, []);
 
   return (
@@ -105,7 +105,7 @@ const Map = () => {
           
           {/* Map container */}
           <div className="bg-white rounded-xl overflow-hidden shadow-subtle border border-vecino-gray-200 h-[calc(100vh-200px)]">
-            {mapReady && (
+            {isClientSide && (
               <IncidentMap 
                 incidents={mockIncidents} 
                 onIncidentClick={(incident) => setSelectedIncident(incident)}

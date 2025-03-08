@@ -35,7 +35,22 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [showLegend, setShowLegend] = useState(true);
-  const mapRef = useRef(null);
+  const [isMapReady, setIsMapReady] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  
+  // Initialize map only on client side
+  useEffect(() => {
+    setIsMapReady(typeof window !== 'undefined');
+    console.log("Map component mounted, window exists:", typeof window !== 'undefined');
+    
+    // Ensure Leaflet styles are properly loaded
+    if (typeof window !== 'undefined') {
+      const link = document.createElement('link');
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+    }
+  }, []);
   
   // Apply filters when they change
   useEffect(() => {
@@ -67,14 +82,21 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
     }
   };
 
-  // Ensure Leaflet is initialized only in browser
-  useEffect(() => {
-    // This is required because Leaflet expects a window object
-    console.log("Map component mounted, window exists:", typeof window !== 'undefined');
-  }, []);
-  
-  if (typeof window === 'undefined') {
-    return <div className="loading">Loading map...</div>;
+  // Show loading state if map is not ready
+  if (!isMapReady) {
+    return (
+      <div className="flex items-center justify-center h-full w-full bg-vecino-gray-100 rounded-xl">
+        <div className="text-vecino-gray-600 text-center">
+          <div className="mb-4">
+            <svg className="animate-spin h-8 w-8 mx-auto text-vecino-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+          <p className="font-medium">Cargando mapa...</p>
+        </div>
+      </div>
+    );
   }
   
   return (
@@ -94,6 +116,7 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
         attributionControl={false}
+        className="z-0"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
