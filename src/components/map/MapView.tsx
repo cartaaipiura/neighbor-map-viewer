@@ -13,7 +13,17 @@ const MapEventHandler = () => {
     click: (e) => {
       // Evitamos la propagación del evento para que no cause recargas
       e.originalEvent.stopPropagation();
+      e.originalEvent.preventDefault();
       console.log("Click en el mapa en:", e.latlng);
+    },
+    // Evitar que otros eventos causen recentrado o recarga
+    dblclick: (e) => {
+      e.originalEvent.stopPropagation();
+      e.originalEvent.preventDefault();
+    },
+    mousedown: (e) => {
+      // También detenemos la propagación del mousedown para evitar comportamientos inesperados
+      e.originalEvent.stopPropagation();
     }
   });
   return null;
@@ -40,6 +50,7 @@ const MapView: React.FC<MapViewProps> = ({
 }) => {
   const [mapKey, setMapKey] = useState(`map-${Date.now()}`);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   
   useEffect(() => {
     console.log("MapView montado con", filteredIncidents.length, "incidencias");
@@ -65,10 +76,34 @@ const MapView: React.FC<MapViewProps> = ({
   const setMapRef = (map: L.Map) => {
     console.log("Mapa referenciado correctamente");
     setMapInstance(map);
+    
+    // Desactivar comportamientos que puedan causar recargas
+    map.on('dragstart', () => {
+      console.log("Inicio de arrastre del mapa");
+      setIsDragging(true);
+    });
+    
+    map.on('dragend', () => {
+      console.log("Fin de arrastre del mapa");
+      setIsDragging(false);
+    });
+    
+    // Prevenir que el mapa se recenter automáticamente
+    map.options.inertia = false;
   };
 
   return (
-    <div className="w-full h-full relative" style={{ height: '100%', minHeight: '600px' }}>
+    <div 
+      className="w-full h-full relative" 
+      style={{ height: '100%', minHeight: '600px' }}
+      onClick={(e) => {
+        // Evitar que clics en el contenedor afecten al mapa
+        if (isDragging) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }}
+    >
       <Suspense fallback={<MapLoadingIndicator />}>
         <MapContainer
           key={mapKey}
@@ -80,10 +115,11 @@ const MapView: React.FC<MapViewProps> = ({
           className="z-10 h-full w-full"
           whenReady={handleMapReady}
           ref={setMapRef}
-          // Desactivar eventos que puedan causar recargas innecesarias
+          // Configurar opciones de mapa para prevenir recargas
           scrollWheelZoom={true}
-          doubleClickZoom={true}
+          doubleClickZoom={false}
           dragging={true}
+          inertia={false}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
