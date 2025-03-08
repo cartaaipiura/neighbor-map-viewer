@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import { Incident } from '../incidents/types';
@@ -22,6 +21,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
             click: (e) => {
               // Prevent map from recentering
               e.originalEvent.stopPropagation();
+              e.originalEvent.preventDefault();
               
               // Call the incident click handler
               onIncidentClick(incident);
@@ -34,8 +34,19 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
             closeButton={false}
             // Prevent auto-panning (centering) when popup opens
             autoPan={false}
+            // Additional options to prevent map movement
+            className="no-autopan"
+            // Keep popup open when clicking elsewhere
+            autoClose={false}
           >
-            <IncidentCard incident={incident} variant="map" />
+            <div 
+              onClick={(e) => {
+                // Prevent event bubbling to map
+                e.stopPropagation();
+              }}
+            >
+              <IncidentCard incident={incident} variant="map" />
+            </div>
           </Popup>
         </Marker>
       ))}

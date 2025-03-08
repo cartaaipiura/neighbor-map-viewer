@@ -1,4 +1,3 @@
-
 import React, { Suspense, useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MapControls from './MapControls';
@@ -28,7 +27,14 @@ const MapEventHandler = () => {
     // Deshabilitar el autopan de popups
     popupopen: (e) => {
       console.log("Popup abierto, previniendo autopan");
-      // No hacer nada, solo capturar el evento
+      // Desactivar explícitamente el autopan
+      if (e.popup && typeof e.popup.options !== 'undefined') {
+        e.popup.options.autoPan = false;
+      }
+    },
+    // También prevenir el cierre automático de popups
+    popupclose: (e) => {
+      e.originalEvent?.stopPropagation();
     }
   });
   return null;
@@ -105,6 +111,20 @@ const MapView: React.FC<MapViewProps> = ({
       
       // Deshabilitar el autopan de los popups en todo el mapa
       map.options.closePopupOnClick = false;
+      
+      // Configuración adicional para prevenir recentrado
+      if (typeof L !== 'undefined' && L.Map) {
+        // Desactivar animaciones y transiciones que pueden causar recentrado
+        map.options.zoomAnimation = false;
+        map.options.fadeAnimation = false;
+        map.options.markerZoomAnimation = false;
+        
+        // Configurar opciones globales de popup para todo el mapa
+        if (L.Popup) {
+          L.Popup.prototype.options.autoPan = false;
+          L.Popup.prototype.options.autoClose = false;
+        }
+      }
     } catch (error) {
       console.error("Error al configurar eventos del mapa:", error);
     }
@@ -116,8 +136,8 @@ const MapView: React.FC<MapViewProps> = ({
       style={{ height: '100%', minHeight: '600px' }}
       onClick={(e) => {
         // Evitar que clics en el contenedor afecten al mapa
+        e.stopPropagation();
         if (isDragging) {
-          e.stopPropagation();
           e.preventDefault();
         }
       }}
@@ -140,6 +160,10 @@ const MapView: React.FC<MapViewProps> = ({
           inertia={false}
           // Deshabilitar autocentrado de popups
           closePopupOnClick={false}
+          // Desactivar animaciones que pueden causar recentrado
+          zoomAnimation={false}
+          fadeAnimation={false}
+          markerZoomAnimation={false}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

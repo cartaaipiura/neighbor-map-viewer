@@ -66,6 +66,29 @@ const MapStyles: React.FC = () => {
       height: 100%;
       width: 100%;
     }
+    
+    /* Estilos adicionales para prevenir recentrado de popups */
+    .leaflet-popup {
+      margin-bottom: 0 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    
+    .no-autopan {
+      transition: none !important;
+      transform: none !important;
+    }
+    
+    /* Bloquear animaciones de movimiento */
+    .leaflet-fade-anim .leaflet-popup {
+      transition: none !important;
+      opacity: 1 !important;
+    }
+    
+    /* Prevenir que el mapa se mueva al hacer clic en el popup */
+    .leaflet-popup-content * {
+      pointer-events: auto;
+    }
   `;
 
   return (
