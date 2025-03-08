@@ -3,7 +3,8 @@ import React from 'react';
 
 const MapStyles: React.FC = () => {
   return (
-    <style jsx global>{`
+    <style dangerouslySetInnerHTML={{
+      __html: `
       .custom-marker-icon {
         width: 24px;
         height: 24px;
@@ -66,7 +67,7 @@ const MapStyles: React.FC = () => {
         height: 100%;
         width: 100%;
       }
-    `}</style>
+    `}}></style>
   );
 };
 
