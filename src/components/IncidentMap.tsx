@@ -161,8 +161,8 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
           attributionControl={false}
           className="z-0"
           key="incident-map-container"
-          whenCreated={(mapInstance) => {
-            mapInstanceRef.current = mapInstance;
+          whenReady={(mapInstance) => {
+            mapInstanceRef.current = mapInstance.target;
             console.log("Mapa creado exitosamente");
           }}
         >
@@ -198,3 +198,4 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
 };
 
 export default IncidentMap;
+

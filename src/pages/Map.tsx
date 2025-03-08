@@ -82,7 +82,7 @@ const Map = () => {
       const timer = setTimeout(() => {
         setIsClientSide(true);
         console.log("Map page: cliente detectado, listo para renderizar");
-      }, 500);
+      }, 1000); // Aumentamos el tiempo para asegurar que todo esté cargado
       
       return () => clearTimeout(timer);
     }
@@ -149,3 +149,4 @@ const Map = () => {
 };
 
 export default Map;
+
