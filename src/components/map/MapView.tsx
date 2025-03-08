@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
 import MapControls from './MapControls';
 import MapLegend from './MapLegend';
 import MapMarkers from './MapMarkers';
@@ -34,7 +35,8 @@ const MapEventHandler = () => {
     },
     // También prevenir el cierre automático de popups
     popupclose: (e) => {
-      e.originalEvent?.stopPropagation();
+      // PopupEvent doesn't have originalEvent property, so we don't use it here
+      console.log("Popup closed, preventing default behavior");
     }
   });
   return null;
@@ -113,17 +115,15 @@ const MapView: React.FC<MapViewProps> = ({
       map.options.closePopupOnClick = false;
       
       // Configuración adicional para prevenir recentrado
-      if (typeof L !== 'undefined' && L.Map) {
-        // Desactivar animaciones y transiciones que pueden causar recentrado
-        map.options.zoomAnimation = false;
-        map.options.fadeAnimation = false;
-        map.options.markerZoomAnimation = false;
-        
-        // Configurar opciones globales de popup para todo el mapa
-        if (L.Popup) {
-          L.Popup.prototype.options.autoPan = false;
-          L.Popup.prototype.options.autoClose = false;
-        }
+      // Desactivar animaciones y transiciones que pueden causar recentrado
+      map.options.zoomAnimation = false;
+      map.options.fadeAnimation = false;
+      map.options.markerZoomAnimation = false;
+      
+      // Configurar opciones globales de popup para todo el mapa
+      if (L.Popup) {
+        L.Popup.prototype.options.autoPan = false;
+        L.Popup.prototype.options.autoClose = false;
       }
     } catch (error) {
       console.error("Error al configurar eventos del mapa:", error);
