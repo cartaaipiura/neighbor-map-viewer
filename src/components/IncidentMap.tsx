@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -23,6 +22,19 @@ interface IncidentMapProps {
   showFilters?: boolean;
 }
 
+// Ensure Leaflet CSS is loaded
+if (typeof window !== 'undefined') {
+  // Check for Leaflet CSS and add if not present
+  const linkId = 'leaflet-css';
+  if (!document.getElementById(linkId)) {
+    const link = document.createElement('link');
+    link.id = linkId;
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }
+}
+
 const IncidentMap: React.FC<IncidentMapProps> = ({
   incidents,
   initialPosition = [40.416775, -3.70379], // Madrid by default
@@ -40,15 +52,9 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
   
   // Initialize map only on client side
   useEffect(() => {
-    setIsMapReady(typeof window !== 'undefined');
-    console.log("Map component mounted, window exists:", typeof window !== 'undefined');
-    
-    // Ensure Leaflet styles are properly loaded
     if (typeof window !== 'undefined') {
-      const link = document.createElement('link');
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-      link.rel = 'stylesheet';
-      document.head.appendChild(link);
+      setIsMapReady(true);
+      console.log("Map component mounted, window exists:", true);
     }
   }, []);
   
@@ -117,6 +123,7 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
         zoomControl={false}
         attributionControl={false}
         className="z-0"
+        key="map-container"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
