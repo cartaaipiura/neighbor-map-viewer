@@ -1,11 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
-import IncidentMap from '@/components/IncidentMap';
 import { Incident } from '@/components/IncidentCard';
-import { MapPin, Search } from 'lucide-react';
 
-// Mock data for incidents (same as in Index.tsx)
+// Cargar IncidentMap perezosamente
+const IncidentMap = React.lazy(() => import('@/components/IncidentMap'));
+
+// Datos de muestra para incidentes (igual que en Index.tsx)
 const mockIncidents: Incident[] = [
   {
     id: 1,
@@ -54,20 +55,37 @@ const mockIncidents: Incident[] = [
   }
 ];
 
+// Componente de carga
+const LoadingIndicator = () => (
+  <div className="flex items-center justify-center h-full">
+    <div className="text-vecino-gray-600 text-center">
+      <div className="mb-4">
+        <svg className="animate-spin h-8 w-8 mx-auto text-vecino-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <p className="font-medium">Cargando mapa...</p>
+    </div>
+  </div>
+);
+
 const Map = () => {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [isClientSide, setIsClientSide] = useState(false);
 
-  // Ensure map is only rendered client-side
+  // Asegurar que el mapa solo se renderice del lado del cliente
   useEffect(() => {
-    setIsClientSide(true);
-    
-    // Force a re-render after a short delay to ensure map initializes correctly
-    const timer = setTimeout(() => {
-      setIsClientSide(true);
-    }, 100);
-    
-    return () => clearTimeout(timer);
+    // Verificar que estamos en el navegador
+    if (typeof window !== 'undefined') {
+      // Dar un tiempo para asegurar que los estilos de Leaflet se carguen
+      const timer = setTimeout(() => {
+        setIsClientSide(true);
+        console.log("Map page: cliente detectado, listo para renderizar");
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   return (
@@ -76,7 +94,7 @@ const Map = () => {
       
       <main className="pt-16 pb-8 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
-          {/* Map header */}
+          {/* Encabezado del mapa */}
           <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-vecino-gray-900 mb-2">
@@ -87,7 +105,7 @@ const Map = () => {
               </p>
             </div>
             
-            {/* WhatsApp Button */}
+            {/* Botón de WhatsApp */}
             <a
               href="https://wa.me/+34600000000?text=Quiero%20reportar%20una%20incidencia%20urbana"
               target="_blank"
@@ -110,27 +128,19 @@ const Map = () => {
             </a>
           </div>
           
-          {/* Map container */}
+          {/* Contenedor del mapa */}
           <div className="bg-white rounded-xl overflow-hidden shadow-subtle border border-vecino-gray-200 h-[calc(100vh-200px)]">
-            {isClientSide ? (
-              <IncidentMap 
-                incidents={mockIncidents} 
-                onIncidentClick={(incident) => setSelectedIncident(incident)}
-                key="incident-map"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-vecino-gray-600 text-center">
-                  <div className="mb-4">
-                    <svg className="animate-spin h-8 w-8 mx-auto text-vecino-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </div>
-                  <p className="font-medium">Cargando mapa...</p>
-                </div>
-              </div>
-            )}
+            <Suspense fallback={<LoadingIndicator />}>
+              {isClientSide ? (
+                <IncidentMap 
+                  incidents={mockIncidents} 
+                  onIncidentClick={(incident) => setSelectedIncident(incident)}
+                  key={`incident-map-${Date.now()}`} // Clave única para forzar re-renderizado
+                />
+              ) : (
+                <LoadingIndicator />
+              )}
+            </Suspense>
           </div>
         </div>
       </main>
