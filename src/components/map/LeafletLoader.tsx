@@ -1,11 +1,13 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Componente para cargar los estilos de Leaflet
 const LeafletLoader: React.FC = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   useEffect(() => {
     // Verificar que estamos en el navegador
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !isLoaded) {
       // Cargar CSS de Leaflet si no está ya cargado
       const leafletLinkId = 'leaflet-css';
       if (!document.getElementById(leafletLinkId)) {
@@ -15,8 +17,13 @@ const LeafletLoader: React.FC = () => {
         link.rel = 'stylesheet';
         link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
         link.crossOrigin = '';
+        
+        // Añadir un listener para saber cuándo se carga el CSS
+        link.onload = () => {
+          console.log('Leaflet CSS cargado correctamente');
+        };
+        
         document.head.appendChild(link);
-        console.log('Leaflet CSS cargado');
       }
       
       // Verificar si el script de Leaflet está cargado
@@ -28,11 +35,21 @@ const LeafletLoader: React.FC = () => {
         script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
         script.crossOrigin = '';
         script.async = true;
+        
+        // Añadir un listener para saber cuándo se carga el script
+        script.onload = () => {
+          console.log('Leaflet JS cargado correctamente');
+          setIsLoaded(true);
+        };
+        
         document.body.appendChild(script);
-        console.log('Leaflet JS cargado');
+      } else if (window.L) {
+        // Si Leaflet ya está disponible, marcar como cargado
+        console.log('Leaflet ya está disponible');
+        setIsLoaded(true);
       }
     }
-  }, []);
+  }, [isLoaded]);
 
   return null;
 };

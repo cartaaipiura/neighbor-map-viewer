@@ -1,11 +1,23 @@
 
 import React, { Suspense, useEffect, useState } from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MapControls from './MapControls';
 import MapLegend from './MapLegend';
 import MapMarkers from './MapMarkers';
 import { Incident } from '../incidents/types';
 import MapLoadingIndicator from './MapLoadingIndicator';
+
+// Componente para prevenir recargas innecesarias al hacer clic
+const MapEventHandler = () => {
+  const map = useMapEvents({
+    click: (e) => {
+      // Evitamos la propagación del evento para que no cause recargas
+      e.originalEvent.stopPropagation();
+      console.log("Click en el mapa en:", e.latlng);
+    }
+  });
+  return null;
+};
 
 interface MapViewProps {
   incidents: Incident[];
@@ -27,18 +39,21 @@ const MapView: React.FC<MapViewProps> = ({
   onIncidentClick
 }) => {
   const [mapKey, setMapKey] = useState(`map-${Date.now()}`);
+  const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
   
   useEffect(() => {
     console.log("MapView montado con", filteredIncidents.length, "incidencias");
     console.log("Posición inicial:", initialPosition);
     
-    // Forzar re-renderizado del mapa después de 500ms
-    const timer = setTimeout(() => {
-      setMapKey(`map-${Date.now()}`);
-      console.log("Mapa re-renderizado con clave:", `map-${Date.now()}`);
-    }, 500);
-    
-    return () => clearTimeout(timer);
+    // Solo forzamos el re-renderizado del mapa si es necesario y solo una vez
+    if (!mapInstance) {
+      const timer = setTimeout(() => {
+        setMapKey(`map-${Date.now()}`);
+        console.log("Mapa re-renderizado con clave:", `map-${Date.now()}`);
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   return (
@@ -52,9 +67,14 @@ const MapView: React.FC<MapViewProps> = ({
           zoomControl={false}
           attributionControl={false}
           className="z-10 h-full w-full"
-          whenReady={() => {
+          whenReady={(map) => {
             console.log("Mapa creado exitosamente");
+            setMapInstance(map.target);
           }}
+          // Desactivar eventos que puedan causar recargas innecesarias
+          scrollWheelZoom={true}
+          doubleClickZoom={true}
+          dragging={true}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -72,6 +92,9 @@ const MapView: React.FC<MapViewProps> = ({
             isVisible={showLegend} 
             toggleLegend={toggleLegend} 
           />
+          
+          {/* Componente para manejar eventos del mapa */}
+          <MapEventHandler />
         </MapContainer>
       </Suspense>
     </div>
