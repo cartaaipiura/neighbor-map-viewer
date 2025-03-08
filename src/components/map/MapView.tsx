@@ -1,4 +1,3 @@
-
 import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
@@ -8,38 +7,30 @@ import MapMarkers from './MapMarkers';
 import { Incident } from '../incidents/types';
 import MapLoadingIndicator from './MapLoadingIndicator';
 
-// Componente para prevenir recargas innecesarias al hacer clic
 const MapEventHandler = () => {
   const map = useMapEvents({
     click: (e) => {
-      // Evitamos la propagación del evento para que no cause recargas
       e.originalEvent.stopPropagation();
       e.originalEvent.preventDefault();
       console.log("Click en el mapa en:", e.latlng);
     },
-    // Evitar que otros eventos causen recentrado o recarga
     dblclick: (e) => {
       e.originalEvent.stopPropagation();
       e.originalEvent.preventDefault();
     },
     mousedown: (e) => {
-      // También detenemos la propagación del mousedown para evitar comportamientos inesperados
       e.originalEvent.stopPropagation();
     },
-    // Deshabilitar el autopan de popups
     popupopen: (e) => {
       console.log("Popup abierto, previniendo autopan");
-      // Desactivar explícitamente el autopan
       if (e.popup && typeof e.popup.options !== 'undefined') {
         e.popup.options.autoPan = false;
       }
       
-      // Mantener la vista del mapa estable
       if (map) {
         const currentCenter = map.getCenter();
         const currentZoom = map.getZoom();
         
-        // Usar setTimeout para asegurar que esto ocurre después del evento de apertura del popup
         setTimeout(() => {
           map.setView(currentCenter, currentZoom, {
             animate: false
@@ -47,9 +38,7 @@ const MapEventHandler = () => {
         }, 0);
       }
     },
-    // También prevenir el cierre automático de popups
     popupclose: (e) => {
-      // PopupEvent doesn't have originalEvent property, so we don't use it here
       console.log("Popup closed, preventing default behavior");
     }
   });
@@ -84,7 +73,6 @@ const MapView: React.FC<MapViewProps> = ({
     console.log("MapView montado con", filteredIncidents.length, "incidencias");
     console.log("Posición inicial:", initialPosition);
     
-    // Solo forzamos el re-renderizado del mapa si es necesario y solo una vez
     if (!mapInstance) {
       const timer = setTimeout(() => {
         setMapKey(`map-${Date.now()}`);
@@ -94,17 +82,14 @@ const MapView: React.FC<MapViewProps> = ({
       return () => clearTimeout(timer);
     }
     
-    // Aplicar configuraciones globales de Leaflet
     if (L.Popup) {
       L.Popup.prototype.options.autoPan = false;
       L.Popup.prototype.options.autoClose = false;
     }
   }, []);
 
-  // Función para cuando el mapa está listo
   const handleMapReady = (map: L.Map) => {
     console.log("Mapa creado exitosamente");
-    // Desactivar comportamientos de mapa que causan recentrado
     map.options.closePopupOnClick = false;
     map.options.inertia = false;
     map.options.zoomAnimation = false;
@@ -112,9 +97,7 @@ const MapView: React.FC<MapViewProps> = ({
     map.options.markerZoomAnimation = false;
   };
 
-  // Fixed: Using useCallback with proper type signature
-  const setMapRef = useCallback((map: L.Map) => {
-    // Verificar que el mapa existe antes de intentar configurarlo
+  const setMapRef = useCallback((map: L.Map | null) => {
     if (!map) {
       console.log("Referencia de mapa es null");
       return;
@@ -125,7 +108,6 @@ const MapView: React.FC<MapViewProps> = ({
     setMapInstance(map);
     
     try {
-      // Desactivar comportamientos que puedan causar recargas
       map.on('dragstart', () => {
         console.log("Inicio de arrastre del mapa");
         setIsDragging(true);
@@ -136,19 +118,14 @@ const MapView: React.FC<MapViewProps> = ({
         setIsDragging(false);
       });
       
-      // Prevenir que el mapa se recenter automáticamente
       map.options.inertia = false;
       
-      // Deshabilitar el autopan de los popups en todo el mapa
       map.options.closePopupOnClick = false;
       
-      // Configuración adicional para prevenir recentrado
-      // Desactivar animaciones y transiciones que pueden causar recentrado
       map.options.zoomAnimation = false;
       map.options.fadeAnimation = false;
       map.options.markerZoomAnimation = false;
       
-      // Configurar opciones globales de popup para todo el mapa
       if (L.Popup) {
         L.Popup.prototype.options.autoPan = false;
         L.Popup.prototype.options.autoClose = false;
@@ -163,7 +140,6 @@ const MapView: React.FC<MapViewProps> = ({
       className="w-full h-full relative" 
       style={{ height: '100%', minHeight: '600px' }}
       onClick={(e) => {
-        // Evitar que clics en el contenedor afecten al mapa
         e.stopPropagation();
         if (isDragging) {
           e.preventDefault();
@@ -181,14 +157,11 @@ const MapView: React.FC<MapViewProps> = ({
           className="z-10 h-full w-full"
           whenReady={(map) => handleMapReady(map.target)}
           ref={setMapRef}
-          // Configurar opciones de mapa para prevenir recargas
           scrollWheelZoom={true}
           doubleClickZoom={false}
           dragging={true}
           inertia={false}
-          // Deshabilitar autocentrado de popups
           closePopupOnClick={false}
-          // Desactivar animaciones que pueden causar recentrado
           zoomAnimation={false}
           fadeAnimation={false}
           markerZoomAnimation={false}
@@ -210,7 +183,6 @@ const MapView: React.FC<MapViewProps> = ({
             toggleLegend={toggleLegend} 
           />
           
-          {/* Componente para manejar eventos del mapa */}
           <MapEventHandler />
         </MapContainer>
       </Suspense>
