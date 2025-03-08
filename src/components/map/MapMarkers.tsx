@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
-import { Incident } from '../IncidentCard';
+import { Incident } from '../incidents/types';
 import IncidentCard from '../IncidentCard';
 import { createCustomIcon } from './MapMarkerUtils';
 
