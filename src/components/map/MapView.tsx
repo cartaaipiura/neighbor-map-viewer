@@ -67,29 +67,39 @@ const MapView: React.FC<MapViewProps> = ({
     }
   }, []);
 
-  // Función para capturar la instancia del mapa cuando esté lista
+  // Función para cuando el mapa está listo
   const handleMapReady = () => {
     console.log("Mapa creado exitosamente");
   };
 
-  // Función separada para cuando el mapa está listo y configurar la instancia
-  const setMapRef = (map: L.Map) => {
+  // Función para configurar la instancia del mapa
+  const setMapRef = (map: L.Map | null) => {
+    // Verificar que el mapa existe antes de intentar configurarlo
+    if (!map) {
+      console.log("Referencia de mapa es null");
+      return;
+    }
+    
     console.log("Mapa referenciado correctamente");
     setMapInstance(map);
     
-    // Desactivar comportamientos que puedan causar recargas
-    map.on('dragstart', () => {
-      console.log("Inicio de arrastre del mapa");
-      setIsDragging(true);
-    });
-    
-    map.on('dragend', () => {
-      console.log("Fin de arrastre del mapa");
-      setIsDragging(false);
-    });
-    
-    // Prevenir que el mapa se recenter automáticamente
-    map.options.inertia = false;
+    try {
+      // Desactivar comportamientos que puedan causar recargas
+      map.on('dragstart', () => {
+        console.log("Inicio de arrastre del mapa");
+        setIsDragging(true);
+      });
+      
+      map.on('dragend', () => {
+        console.log("Fin de arrastre del mapa");
+        setIsDragging(false);
+      });
+      
+      // Prevenir que el mapa se recenter automáticamente
+      map.options.inertia = false;
+    } catch (error) {
+      console.error("Error al configurar eventos del mapa:", error);
+    }
   };
 
   return (
