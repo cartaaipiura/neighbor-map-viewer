@@ -112,7 +112,7 @@ const MapView: React.FC<MapViewProps> = ({
     map.options.markerZoomAnimation = false;
   };
 
-  // Función para configurar la instancia del mapa
+  // Fixed: Using useCallback with proper type signature
   const setMapRef = useCallback((map: L.Map) => {
     // Verificar que el mapa existe antes de intentar configurarlo
     if (!map) {

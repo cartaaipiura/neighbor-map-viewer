@@ -53,14 +53,8 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
             closeButton={false}
             autoPan={false}
             autoClose={false}
+            closeOnClick={false}
             className="no-autopan"
-            // Additional options to prevent map movement
-            options={{
-              autoPan: false,
-              closeOnClick: false,
-              autoClose: false,
-              className: 'no-autopan'
-            }}
           >
             <div 
               onClick={(e) => {
