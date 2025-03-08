@@ -1,5 +1,5 @@
 
-import React, { Suspense, useEffect, useState, useRef } from 'react';
+import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import MapControls from './MapControls';
@@ -113,7 +113,7 @@ const MapView: React.FC<MapViewProps> = ({
   };
 
   // Función para configurar la instancia del mapa
-  const setMapRef = (map: L.Map) => {
+  const setMapRef = useCallback((map: L.Map) => {
     // Verificar que el mapa existe antes de intentar configurarlo
     if (!map) {
       console.log("Referencia de mapa es null");
@@ -156,7 +156,7 @@ const MapView: React.FC<MapViewProps> = ({
     } catch (error) {
       console.error("Error al configurar eventos del mapa:", error);
     }
-  };
+  }, []);
 
   return (
     <div 
