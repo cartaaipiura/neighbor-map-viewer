@@ -56,6 +56,17 @@ const MapView: React.FC<MapViewProps> = ({
     }
   }, []);
 
+  // Función para capturar la instancia del mapa cuando esté lista
+  const handleMapReady = () => {
+    console.log("Mapa creado exitosamente");
+  };
+
+  // Función separada para cuando el mapa está listo y configurar la instancia
+  const setMapRef = (map: L.Map) => {
+    console.log("Mapa referenciado correctamente");
+    setMapInstance(map);
+  };
+
   return (
     <div className="w-full h-full relative" style={{ height: '100%', minHeight: '600px' }}>
       <Suspense fallback={<MapLoadingIndicator />}>
@@ -67,10 +78,8 @@ const MapView: React.FC<MapViewProps> = ({
           zoomControl={false}
           attributionControl={false}
           className="z-10 h-full w-full"
-          whenReady={(map) => {
-            console.log("Mapa creado exitosamente");
-            setMapInstance(map.target);
-          }}
+          whenReady={handleMapReady}
+          ref={setMapRef}
           // Desactivar eventos que puedan causar recargas innecesarias
           scrollWheelZoom={true}
           doubleClickZoom={true}
