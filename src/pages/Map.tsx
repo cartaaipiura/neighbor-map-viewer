@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import { Incident } from '@/components/IncidentCard';
@@ -82,7 +81,7 @@ const Map = () => {
       const timer = setTimeout(() => {
         setIsClientSide(true);
         console.log("Map page: cliente detectado, listo para renderizar");
-      }, 1000); // Aumentamos el tiempo para asegurar que todo esté cargado
+      }, 1500); // Aumentamos aún más el tiempo para asegurar que todo esté cargado
       
       return () => clearTimeout(timer);
     }
@@ -149,4 +148,3 @@ const Map = () => {
 };
 
 export default Map;
-

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -161,8 +160,7 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
           attributionControl={false}
           className="z-0"
           key="incident-map-container"
-          whenReady={(mapInstance) => {
-            mapInstanceRef.current = mapInstance.target;
+          whenReady={() => {
             console.log("Mapa creado exitosamente");
           }}
         >
@@ -198,4 +196,3 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
 };
 
 export default IncidentMap;
-
