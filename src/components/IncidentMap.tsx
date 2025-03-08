@@ -238,6 +238,7 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [showLegend, setShowLegend] = useState(true);
+  const mapRef = useRef(null);
   
   // Apply filters when they change
   useEffect(() => {
@@ -268,9 +269,19 @@ const IncidentMap: React.FC<IncidentMapProps> = ({
       onIncidentClick(incident);
     }
   };
+
+  // Ensure Leaflet is initialized only in browser
+  useEffect(() => {
+    // This is required because Leaflet expects a window object
+    console.log("Map component mounted, window exists:", typeof window !== 'undefined');
+  }, []);
+  
+  if (typeof window === 'undefined') {
+    return <div className="loading">Loading map...</div>;
+  }
   
   return (
-    <div className={cn("relative rounded-xl overflow-hidden", className)}>
+    <div className={cn("relative rounded-xl overflow-hidden", className)} ref={mapRef}>
       {showFilters && (
         <MapFilters 
           onFiltersChange={handleFiltersChange}
