@@ -1,5 +1,5 @@
 
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import MapControls from './MapControls';
 import MapLegend from './MapLegend';
@@ -26,28 +26,32 @@ const MapView: React.FC<MapViewProps> = ({
   toggleLegend,
   onIncidentClick
 }) => {
+  const [mapKey, setMapKey] = useState(`map-${Date.now()}`);
+  
   useEffect(() => {
-    console.log("MapView mounted with", filteredIncidents.length, "incidents");
-    console.log("Initial position:", initialPosition);
+    console.log("MapView montado con", filteredIncidents.length, "incidencias");
+    console.log("Posición inicial:", initialPosition);
     
-    // Force reflow to ensure the container is correctly sized
-    const mapContainers = document.querySelectorAll('.leaflet-container');
-    mapContainers.forEach(container => {
-      console.log("Found Leaflet container:", container);
-    });
-  }, [filteredIncidents, initialPosition]);
+    // Forzar re-renderizado del mapa después de 500ms
+    const timer = setTimeout(() => {
+      setMapKey(`map-${Date.now()}`);
+      console.log("Mapa re-renderizado con clave:", `map-${Date.now()}`);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative" style={{ height: '100%', minHeight: '600px' }}>
       <Suspense fallback={<MapLoadingIndicator />}>
         <MapContainer
+          key={mapKey}
           center={initialPosition}
           zoom={initialZoom}
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: '100%', width: '100%', zIndex: 10 }}
           zoomControl={false}
           attributionControl={false}
-          className="z-0 h-full w-full"
-          key={`incident-map-container-${Date.now()}`}
+          className="z-10 h-full w-full"
           whenReady={() => {
             console.log("Mapa creado exitosamente");
           }}
@@ -63,6 +67,7 @@ const MapView: React.FC<MapViewProps> = ({
           />
           
           <MapControls position={initialPosition} />
+          
           <MapLegend 
             isVisible={showLegend} 
             toggleLegend={toggleLegend} 

@@ -9,20 +9,45 @@ export const useMapSetup = (incidents: Incident[]) => {
   const [showLegend, setShowLegend] = useState(true);
   const [isMapReady, setIsMapReady] = useState(false);
 
-  // Initialize the map only on the client side
+  // Inicializar el mapa solo del lado del cliente
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Give time for Leaflet styles to load correctly
-      const timer = setTimeout(() => {
-        console.log("Setting map ready state to true");
-        setIsMapReady(true);
-      }, 1000); // Increased timeout to ensure resources are loaded
-      
-      return () => clearTimeout(timer);
+      // Verificar que Leaflet está disponible
+      const checkLeaflet = () => {
+        if (window.L) {
+          console.log("Leaflet detectado, estableciendo mapa como listo");
+          setIsMapReady(true);
+          return true;
+        }
+        return false;
+      };
+
+      // Intentar detectar Leaflet inmediatamente
+      if (!checkLeaflet()) {
+        // Si no está disponible, configurar un intervalo para verificar
+        console.log("Esperando a que Leaflet esté disponible...");
+        const intervalId = setInterval(() => {
+          if (checkLeaflet()) {
+            clearInterval(intervalId);
+          }
+        }, 500);
+
+        // Establecer un tiempo máximo de espera (5 segundos)
+        const timeoutId = setTimeout(() => {
+          clearInterval(intervalId);
+          console.log("Tiempo de espera agotado, forzando la carga del mapa");
+          setIsMapReady(true);
+        }, 5000);
+
+        return () => {
+          clearInterval(intervalId);
+          clearTimeout(timeoutId);
+        };
+      }
     }
   }, []);
   
-  // Apply filters when they change
+  // Aplicar filtros cuando cambien
   useEffect(() => {
     let filtered = [...incidents];
     
@@ -39,7 +64,7 @@ export const useMapSetup = (incidents: Incident[]) => {
     }
     
     setFilteredIncidents(filtered);
-    console.log("Filtered incidents:", filtered.length);
+    console.log("Incidentes filtrados:", filtered.length);
   }, [incidents, selectedCategories, selectedStatuses]);
   
   const handleFiltersChange = (categories: string[], statuses: string[]) => {

@@ -78,11 +78,12 @@ const Map = () => {
   useEffect(() => {
     // Verificar que estamos en el navegador
     if (typeof window !== 'undefined') {
+      console.log("Map page: Cliente detectado, esperando para renderizar");
       // Dar un tiempo para asegurar que los estilos de Leaflet se carguen
       const timer = setTimeout(() => {
         setIsClientSide(true);
-        console.log("Map page: cliente detectado, listo para renderizar");
-      }, 2000); // Increased timeout to ensure everything is loaded
+        console.log("Map page: Estado de cliente establecido a true");
+      }, 1000);
       
       return () => clearTimeout(timer);
     }
@@ -129,14 +130,17 @@ const Map = () => {
           </div>
           
           {/* Contenedor del mapa */}
-          <div className="bg-white rounded-xl overflow-hidden shadow-subtle border border-vecino-gray-200 flex-grow" style={{minHeight: '60vh'}}>
+          <div 
+            className="bg-white rounded-xl overflow-hidden shadow-subtle border border-vecino-gray-200 flex-grow flex" 
+            style={{minHeight: '600px', flex: '1', display: 'flex', flexDirection: 'column'}}
+          >
             <Suspense fallback={<LoadingIndicator />}>
               {isClientSide ? (
                 <IncidentMap 
                   incidents={mockIncidents} 
                   onIncidentClick={(incident) => setSelectedIncident(incident)}
                   key={`incident-map-${Date.now()}`} // Clave única para forzar re-renderizado
-                  className="h-full w-full"
+                  className="h-full w-full flex-grow"
                 />
               ) : (
                 <LoadingIndicator />
