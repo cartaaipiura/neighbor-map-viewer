@@ -24,6 +24,11 @@ const MapEventHandler = () => {
     mousedown: (e) => {
       // También detenemos la propagación del mousedown para evitar comportamientos inesperados
       e.originalEvent.stopPropagation();
+    },
+    // Deshabilitar el autopan de popups
+    popupopen: (e) => {
+      console.log("Popup abierto, previniendo autopan");
+      // No hacer nada, solo capturar el evento
     }
   });
   return null;
@@ -97,6 +102,9 @@ const MapView: React.FC<MapViewProps> = ({
       
       // Prevenir que el mapa se recenter automáticamente
       map.options.inertia = false;
+      
+      // Deshabilitar el autopan de los popups en todo el mapa
+      map.options.closePopupOnClick = false;
     } catch (error) {
       console.error("Error al configurar eventos del mapa:", error);
     }
@@ -130,6 +138,8 @@ const MapView: React.FC<MapViewProps> = ({
           doubleClickZoom={false}
           dragging={true}
           inertia={false}
+          // Deshabilitar autocentrado de popups
+          closePopupOnClick={false}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

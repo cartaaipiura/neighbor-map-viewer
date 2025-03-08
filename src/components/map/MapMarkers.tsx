@@ -19,10 +19,22 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
           position={[incident.latitude, incident.longitude]}
           icon={createCustomIcon(incident.status)}
           eventHandlers={{
-            click: () => onIncidentClick(incident)
+            click: (e) => {
+              // Prevent map from recentering
+              e.originalEvent.stopPropagation();
+              
+              // Call the incident click handler
+              onIncidentClick(incident);
+            }
           }}
         >
-          <Popup minWidth={280} maxWidth={280} closeButton={false}>
+          <Popup 
+            minWidth={280} 
+            maxWidth={280} 
+            closeButton={false}
+            // Prevent auto-panning (centering) when popup opens
+            autoPan={false}
+          >
             <IncidentCard incident={incident} variant="map" />
           </Popup>
         </Marker>
