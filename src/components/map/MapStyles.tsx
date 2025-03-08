@@ -72,6 +72,7 @@ const MapStyles: React.FC = () => {
       margin-bottom: 0 !important;
       transform: none !important;
       transition: none !important;
+      position: absolute !important;
     }
     
     .no-autopan {
@@ -88,6 +89,21 @@ const MapStyles: React.FC = () => {
     /* Prevenir que el mapa se mueva al hacer clic en el popup */
     .leaflet-popup-content * {
       pointer-events: auto;
+    }
+    
+    /* Deshabilitar todas las animaciones del mapa */
+    .leaflet-fade-anim,
+    .leaflet-zoom-anim,
+    .leaflet-zoom-animated {
+      transition: none !important;
+      -webkit-transition: none !important;
+      -moz-transition: none !important;
+    }
+    
+    /* Asegurar que los popups permanezcan en su posición */
+    .leaflet-popup-pane {
+      position: absolute !important;
+      z-index: 7 !important;
     }
   `;
 

@@ -1,4 +1,5 @@
-import React, { Suspense, useEffect, useState } from 'react';
+
+import React, { Suspense, useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import MapControls from './MapControls';
@@ -32,6 +33,19 @@ const MapEventHandler = () => {
       if (e.popup && typeof e.popup.options !== 'undefined') {
         e.popup.options.autoPan = false;
       }
+      
+      // Mantener la vista del mapa estable
+      if (map) {
+        const currentCenter = map.getCenter();
+        const currentZoom = map.getZoom();
+        
+        // Usar setTimeout para asegurar que esto ocurre después del evento de apertura del popup
+        setTimeout(() => {
+          map.setView(currentCenter, currentZoom, {
+            animate: false
+          });
+        }, 0);
+      }
     },
     // También prevenir el cierre automático de popups
     popupclose: (e) => {
@@ -64,6 +78,7 @@ const MapView: React.FC<MapViewProps> = ({
   const [mapKey, setMapKey] = useState(`map-${Date.now()}`);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const mapRef = useRef<L.Map | null>(null);
   
   useEffect(() => {
     console.log("MapView montado con", filteredIncidents.length, "incidencias");
@@ -78,11 +93,23 @@ const MapView: React.FC<MapViewProps> = ({
       
       return () => clearTimeout(timer);
     }
+    
+    // Aplicar configuraciones globales de Leaflet
+    if (L.Popup) {
+      L.Popup.prototype.options.autoPan = false;
+      L.Popup.prototype.options.autoClose = false;
+    }
   }, []);
 
   // Función para cuando el mapa está listo
-  const handleMapReady = () => {
+  const handleMapReady = (map: L.Map) => {
     console.log("Mapa creado exitosamente");
+    // Desactivar comportamientos de mapa que causan recentrado
+    map.options.closePopupOnClick = false;
+    map.options.inertia = false;
+    map.options.zoomAnimation = false;
+    map.options.fadeAnimation = false;
+    map.options.markerZoomAnimation = false;
   };
 
   // Función para configurar la instancia del mapa
@@ -94,6 +121,7 @@ const MapView: React.FC<MapViewProps> = ({
     }
     
     console.log("Mapa referenciado correctamente");
+    mapRef.current = map;
     setMapInstance(map);
     
     try {
@@ -151,7 +179,7 @@ const MapView: React.FC<MapViewProps> = ({
           zoomControl={false}
           attributionControl={false}
           className="z-10 h-full w-full"
-          whenReady={handleMapReady}
+          whenReady={(map) => handleMapReady(map.target)}
           ref={setMapRef}
           // Configurar opciones de mapa para prevenir recargas
           scrollWheelZoom={true}

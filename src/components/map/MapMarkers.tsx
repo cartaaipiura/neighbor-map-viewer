@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import { Incident } from '../incidents/types';
@@ -20,11 +21,25 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
           eventHandlers={{
             click: (e) => {
               // Prevent map from recentering
-              e.originalEvent.stopPropagation();
-              e.originalEvent.preventDefault();
+              if (e.originalEvent) {
+                e.originalEvent.stopPropagation();
+                e.originalEvent.preventDefault();
+              }
               
               // Call the incident click handler
               onIncidentClick(incident);
+              
+              // Prevent the marker click from causing any map movement
+              if (e.target && e.target._map) {
+                const map = e.target._map;
+                // Disable panning temporarily
+                const currentCenter = map.getCenter();
+                setTimeout(() => {
+                  map.setView(currentCenter, map.getZoom(), {
+                    animate: false
+                  });
+                }, 0);
+              }
             }
           }}
         >
@@ -32,16 +47,17 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
             minWidth={280} 
             maxWidth={280} 
             closeButton={false}
-            // Prevent auto-panning (centering) when popup opens
             autoPan={false}
-            // Additional options to prevent map movement
-            className="no-autopan"
-            // Keep popup open when clicking elsewhere
             autoClose={false}
+            className="no-autopan"
           >
             <div 
               onClick={(e) => {
                 // Prevent event bubbling to map
+                e.stopPropagation();
+              }}
+              onMouseDown={(e) => {
+                // Also prevent mousedown events from bubbling
                 e.stopPropagation();
               }}
             >
