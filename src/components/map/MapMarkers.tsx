@@ -20,7 +20,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
           icon={createCustomIcon(incident.status)}
           eventHandlers={{
             click: (e) => {
-              // Prevent map from recentering
+              // Prevent map from recentering by stopping propagation and preventing default
               if (e.originalEvent) {
                 e.originalEvent.stopPropagation();
                 e.originalEvent.preventDefault();
@@ -32,11 +32,15 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
               // Prevent the marker click from causing any map movement
               if (e.target && e.target._map) {
                 const map = e.target._map;
-                // Disable panning temporarily
+                // Store current center and zoom
                 const currentCenter = map.getCenter();
+                const currentZoom = map.getZoom();
+                
+                // Immediately restore the view to prevent recentering
                 setTimeout(() => {
-                  map.setView(currentCenter, map.getZoom(), {
-                    animate: false
+                  map.setView(currentCenter, currentZoom, {
+                    animate: false,
+                    duration: 0
                   });
                 }, 0);
               }
@@ -50,6 +54,13 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
             autoPan={false}
             autoClose={false}
             className="no-autopan"
+            // Additional options to prevent map movement
+            options={{
+              autoPan: false,
+              closeOnClick: false,
+              autoClose: false,
+              className: 'no-autopan'
+            }}
           >
             <div 
               onClick={(e) => {
