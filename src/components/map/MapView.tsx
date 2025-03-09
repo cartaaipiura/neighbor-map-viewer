@@ -97,34 +97,34 @@ const MapView: React.FC<MapViewProps> = ({
     map.options.markerZoomAnimation = false;
   };
 
-  const setMapRef = useCallback((map: L.Map | null) => {
-    if (!map) {
+  const setMapRef = useCallback((mapInstance: L.Map) => {
+    if (!mapInstance) {
       console.log("Referencia de mapa es null");
       return;
     }
     
     console.log("Mapa referenciado correctamente");
-    mapRef.current = map;
-    setMapInstance(map);
+    mapRef.current = mapInstance;
+    setMapInstance(mapInstance);
     
     try {
-      map.on('dragstart', () => {
+      mapInstance.on('dragstart', () => {
         console.log("Inicio de arrastre del mapa");
         setIsDragging(true);
       });
       
-      map.on('dragend', () => {
+      mapInstance.on('dragend', () => {
         console.log("Fin de arrastre del mapa");
         setIsDragging(false);
       });
       
-      map.options.inertia = false;
+      mapInstance.options.inertia = false;
       
-      map.options.closePopupOnClick = false;
+      mapInstance.options.closePopupOnClick = false;
       
-      map.options.zoomAnimation = false;
-      map.options.fadeAnimation = false;
-      map.options.markerZoomAnimation = false;
+      mapInstance.options.zoomAnimation = false;
+      mapInstance.options.fadeAnimation = false;
+      mapInstance.options.markerZoomAnimation = false;
       
       if (L.Popup) {
         L.Popup.prototype.options.autoPan = false;
@@ -156,7 +156,11 @@ const MapView: React.FC<MapViewProps> = ({
           attributionControl={false}
           className="z-10 h-full w-full"
           whenReady={(map) => handleMapReady(map.target)}
-          ref={setMapRef}
+          ref={(map) => {
+            if (map) {
+              setMapRef(map);
+            }
+          }}
           scrollWheelZoom={true}
           doubleClickZoom={false}
           dragging={true}
