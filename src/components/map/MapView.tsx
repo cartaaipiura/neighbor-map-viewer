@@ -150,9 +150,9 @@ const MapView: React.FC<MapViewProps> = ({
           zoomControl={false}
           attributionControl={false}
           className="z-10 h-full w-full"
-          whenReady={(map) => {
-            handleMapReady(map.target);
-            handleMapCreated(map.target);
+          whenCreated={(map) => {
+            handleMapReady(map);
+            handleMapCreated(map);
           }}
           scrollWheelZoom={true}
           doubleClickZoom={false}
