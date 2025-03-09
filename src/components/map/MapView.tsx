@@ -156,11 +156,7 @@ const MapView: React.FC<MapViewProps> = ({
           attributionControl={false}
           className="z-10 h-full w-full"
           whenReady={(map) => handleMapReady(map.target)}
-          ref={(map) => {
-            if (map) {
-              setMapRef(map);
-            }
-          }}
+          ref={mapRef}
           scrollWheelZoom={true}
           doubleClickZoom={false}
           dragging={true}
