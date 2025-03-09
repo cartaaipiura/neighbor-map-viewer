@@ -98,34 +98,28 @@ const MapView: React.FC<MapViewProps> = ({
     map.options.markerZoomAnimation = false;
   };
 
-  const setMapRef = useCallback((mapInstance: L.Map | null) => {
-    if (!mapInstance) {
-      console.log("Referencia de mapa es null");
-      return;
-    }
-    
+  // This function will be called when the map is created
+  const handleMapCreated = useCallback((map: L.Map) => {
     console.log("Mapa referenciado correctamente");
-    mapRef.current = mapInstance;
-    setMapInstance(mapInstance);
+    mapRef.current = map;
+    setMapInstance(map);
     
     try {
-      mapInstance.on('dragstart', () => {
+      map.on('dragstart', () => {
         console.log("Inicio de arrastre del mapa");
         setIsDragging(true);
       });
       
-      mapInstance.on('dragend', () => {
+      map.on('dragend', () => {
         console.log("Fin de arrastre del mapa");
         setIsDragging(false);
       });
       
-      mapInstance.options.inertia = false;
-      
-      mapInstance.options.closePopupOnClick = false;
-      
-      mapInstance.options.zoomAnimation = false;
-      mapInstance.options.fadeAnimation = false;
-      mapInstance.options.markerZoomAnimation = false;
+      map.options.inertia = false;
+      map.options.closePopupOnClick = false;
+      map.options.zoomAnimation = false;
+      map.options.fadeAnimation = false;
+      map.options.markerZoomAnimation = false;
       
       if (L.Popup) {
         L.Popup.prototype.options.autoPan = false;
@@ -156,13 +150,9 @@ const MapView: React.FC<MapViewProps> = ({
           zoomControl={false}
           attributionControl={false}
           className="z-10 h-full w-full"
-          whenReady={(map) => handleMapReady(map.target)}
-          ref={(map) => {
-            // This fixes the type mismatch by providing a proper ref callback
-            // that accepts an argument but can also handle being called with no arguments
-            if (map) {
-              setMapRef(map);
-            }
+          whenReady={(map) => {
+            handleMapReady(map.target);
+            handleMapCreated(map.target);
           }}
           scrollWheelZoom={true}
           doubleClickZoom={false}
