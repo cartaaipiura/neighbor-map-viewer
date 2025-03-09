@@ -1,3 +1,4 @@
+
 import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
@@ -97,7 +98,7 @@ const MapView: React.FC<MapViewProps> = ({
     map.options.markerZoomAnimation = false;
   };
 
-  const setMapRef = useCallback((mapInstance: L.Map) => {
+  const setMapRef = useCallback((mapInstance: L.Map | null) => {
     if (!mapInstance) {
       console.log("Referencia de mapa es null");
       return;
@@ -156,7 +157,13 @@ const MapView: React.FC<MapViewProps> = ({
           attributionControl={false}
           className="z-10 h-full w-full"
           whenReady={(map) => handleMapReady(map.target)}
-          ref={setMapRef}
+          ref={(map) => {
+            // This fixes the type mismatch by providing a proper ref callback
+            // that accepts an argument but can also handle being called with no arguments
+            if (map) {
+              setMapRef(map);
+            }
+          }}
           scrollWheelZoom={true}
           doubleClickZoom={false}
           dragging={true}
