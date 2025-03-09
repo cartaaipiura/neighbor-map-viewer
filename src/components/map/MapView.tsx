@@ -1,4 +1,3 @@
-
 import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
@@ -98,7 +97,6 @@ const MapView: React.FC<MapViewProps> = ({
     map.options.markerZoomAnimation = false;
   };
 
-  // This function will be called when the map is created
   const handleMapCreated = useCallback((map: L.Map) => {
     console.log("Mapa referenciado correctamente");
     mapRef.current = map;
@@ -150,7 +148,10 @@ const MapView: React.FC<MapViewProps> = ({
           zoomControl={false}
           attributionControl={false}
           className="z-10 h-full w-full"
-          whenCreated={handleMapCreated}
+          whenReady={(event) => {
+            handleMapReady(event.target);
+            handleMapCreated(event.target);
+          }}
           scrollWheelZoom={true}
           doubleClickZoom={false}
           dragging={true}
