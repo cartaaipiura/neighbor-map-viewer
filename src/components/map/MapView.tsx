@@ -1,3 +1,4 @@
+
 import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
@@ -148,10 +149,7 @@ const MapView: React.FC<MapViewProps> = ({
           zoomControl={false}
           attributionControl={false}
           className="z-10 h-full w-full"
-          whenReady={(event) => {
-            handleMapReady(event.target);
-            handleMapCreated(event.target);
-          }}
+          whenCreated={handleMapCreated}
           scrollWheelZoom={true}
           doubleClickZoom={false}
           dragging={true}
