@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import { Incident } from '../incidents/types';
 import IncidentCard from '../IncidentCard';
@@ -13,6 +13,7 @@ interface MapMarkersProps {
 
 const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) => {
   const navigate = useNavigate();
+  const [openPopupId, setOpenPopupId] = useState<number | null>(null);
 
   const handleIncidentCardClick = (incident: Incident) => {
     // Primero llamamos al controlador de clics original
@@ -37,6 +38,9 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
                 e.originalEvent.preventDefault();
               }
               
+              // Open this popup
+              setOpenPopupId(incident.id);
+              
               // Call the incident click handler
               onIncidentClick(incident);
               
@@ -48,11 +52,12 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
           <Popup 
             minWidth={280} 
             maxWidth={280} 
-            closeButton={false}
+            closeButton={true}
             autoPan={false}
             autoClose={false}
             closeOnClick={false}
             className="no-autopan"
+            onClose={() => setOpenPopupId(null)}
           >
             <div 
               onClick={(e) => {

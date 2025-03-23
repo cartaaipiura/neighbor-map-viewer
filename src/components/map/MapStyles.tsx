@@ -13,6 +13,13 @@ const MapStyles: React.FC = () => {
       border-radius: 50%;
       box-shadow: 0 0 0 4px white, 0 2px 4px rgba(0, 0, 0, 0.2);
       transform: translateY(-12px);
+      cursor: pointer;
+      z-index: 1000;
+      transition: transform 0.2s ease;
+    }
+    
+    .custom-marker-icon:hover {
+      transform: translateY(-12px) scale(1.2);
     }
     
     .custom-marker-icon.active {
@@ -62,6 +69,20 @@ const MapStyles: React.FC = () => {
       z-index: 10;
       font-size: 20px;
       margin: 5px;
+      color: #666;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      width: 22px !important;
+      height: 22px !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .leaflet-popup-close-button:hover {
+      color: #333;
+      background: #f0f0f0;
     }
     
     .leaflet-popup-tip {
@@ -74,14 +95,22 @@ const MapStyles: React.FC = () => {
       width: 100%;
     }
     
-    /* Estilos adicionales para prevenir recentrado de popups */
+    /* Make popups more visible */
     .leaflet-popup {
-      margin-bottom: 0 !important;
-      transform: none !important;
-      transition: none !important;
-      position: absolute !important;
+      margin-bottom: 10px !important;
+      z-index: 1000 !important;
     }
     
+    /* Ensure popups are above markers */
+    .leaflet-popup-pane {
+      z-index: 700 !important;
+    }
+    
+    .leaflet-marker-pane {
+      z-index: 600 !important;
+    }
+    
+    /* Styles to ensure popups don't move when map pans */
     .no-autopan {
       transition: none !important;
       transform: none !important;
@@ -89,7 +118,7 @@ const MapStyles: React.FC = () => {
     
     /* Bloquear animaciones de movimiento */
     .leaflet-fade-anim .leaflet-popup {
-      transition: none !important;
+      transition: opacity 0.2s linear !important;
       opacity: 1 !important;
     }
     
@@ -105,12 +134,6 @@ const MapStyles: React.FC = () => {
       transition: none !important;
       -webkit-transition: none !important;
       -moz-transition: none !important;
-    }
-    
-    /* Asegurar que los popups permanezcan en su posición */
-    .leaflet-popup-pane {
-      position: absolute !important;
-      z-index: 7 !important;
     }
   `;
 
