@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { User, Phone, IdCard } from 'lucide-react';
+import { User, Phone, IdCard, Shield } from 'lucide-react';
 import { 
   Form, 
   FormControl, 
@@ -16,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export interface Comment {
   id: number;
@@ -127,6 +129,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       <div className="bg-white rounded-xl border border-vecino-gray-200 shadow-subtle p-4 animate-fade-in">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmitComment)} className="space-y-4">
+            <Alert className="bg-vecino-blue/5 border-vecino-blue/20 mb-4">
+              <AlertDescription className="flex items-center gap-2 text-vecino-gray-700">
+                <Shield size={18} className="text-vecino-blue" />
+                Tu número de teléfono y DNI no serán mostrados públicamente. Solo se usarán para verificación.
+              </AlertDescription>
+            </Alert>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}

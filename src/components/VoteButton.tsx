@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { ArrowUp, ArrowDown, Check, X, User, Phone, IdCard } from 'lucide-react';
+import { ArrowUp, ArrowDown, Check, X, User, Phone, IdCard, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
@@ -25,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface VoteButtonProps {
   incidentId: number;
@@ -33,7 +33,6 @@ interface VoteButtonProps {
   className?: string;
 }
 
-// Form validation schema
 const voteFormSchema = z.object({
   name: z.string().min(2, { message: 'El nombre debe tener al menos 2 caracteres' }),
   phone: z.string().min(9, { message: 'El número de teléfono debe tener al menos 9 dígitos' }),
@@ -56,7 +55,6 @@ const VoteButton: React.FC<VoteButtonProps> = ({
   const [pendingVoteType, setPendingVoteType] = useState<'up' | 'down' | null>(null);
   const [userName, setUserName] = useState<string>('');
   
-  // Initialize the form
   const form = useForm<VoteFormValues>({
     resolver: zodResolver(voteFormSchema),
     defaultValues: {
@@ -67,13 +65,11 @@ const VoteButton: React.FC<VoteButtonProps> = ({
   });
   
   const openVoteDialog = (voteType: 'up' | 'down') => {
-    // If user already voted the same way, cancel their vote without dialog
     if (userVote === voteType) {
       handleCancelVote(voteType);
       return;
     }
     
-    // Set the pending vote type and open the dialog
     setPendingVoteType(voteType);
     setVoteDialogOpen(true);
   };
@@ -82,9 +78,6 @@ const VoteButton: React.FC<VoteButtonProps> = ({
     setIsSubmitting(true);
     
     try {
-      // API call would go here
-      // await axios.delete(`/api/votes/${incidentId}`);
-      
       if (voteType === 'up') {
         setUpvotes(upvotes - 1);
       } else {
@@ -108,14 +101,7 @@ const VoteButton: React.FC<VoteButtonProps> = ({
     setIsSubmitting(true);
     
     try {
-      // If user is changing their vote
       if (userVote !== null && userVote !== pendingVoteType) {
-        // API call would go here
-        // await axios.put(`/api/votes/${incidentId}`, { 
-        //   type: pendingVoteType,
-        //   ...values
-        // });
-        
         if (pendingVoteType === 'up') {
           setUpvotes(upvotes + 1);
           setDownvotes(downvotes - 1);
@@ -124,14 +110,6 @@ const VoteButton: React.FC<VoteButtonProps> = ({
           setDownvotes(downvotes + 1);
         }
       } else {
-        // New vote
-        // API call would go here
-        // await axios.post(`/api/votes`, { 
-        //   incidentId, 
-        //   type: pendingVoteType,
-        //   ...values
-        // });
-        
         if (pendingVoteType === 'up') {
           setUpvotes(upvotes + 1);
         } else {
@@ -214,6 +192,13 @@ const VoteButton: React.FC<VoteButtonProps> = ({
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleVoteSubmit)} className="space-y-4 py-4">
+              <Alert className="bg-vecino-blue/5 border-vecino-blue/20 mb-2">
+                <AlertDescription className="flex items-center gap-2 text-vecino-gray-700">
+                  <Shield size={18} className="text-vecino-blue" />
+                  Tu número de teléfono y DNI no serán mostrados públicamente. Solo se usarán para verificación.
+                </AlertDescription>
+              </Alert>
+              
               <FormField
                 control={form.control}
                 name="name"
@@ -306,3 +291,4 @@ const VoteButton: React.FC<VoteButtonProps> = ({
 };
 
 export default VoteButton;
+
