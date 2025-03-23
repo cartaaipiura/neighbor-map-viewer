@@ -57,7 +57,11 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
             autoClose={false}
             closeOnClick={false}
             className="no-autopan"
-            onClose={() => setOpenPopupId(null)}
+            eventHandlers={{
+              remove: () => {
+                setOpenPopupId(null);
+              }
+            }}
           >
             <div 
               onClick={(e) => {
