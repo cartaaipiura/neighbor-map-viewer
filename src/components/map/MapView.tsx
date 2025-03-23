@@ -96,10 +96,8 @@ const MapView: React.FC<MapViewProps> = ({
     map.options.zoomAnimation = false;
     map.options.fadeAnimation = false;
     map.options.markerZoomAnimation = false;
-  };
 
-  const handleMapCreated = useCallback((map: L.Map) => {
-    console.log("Mapa referenciado correctamente");
+    // Also update our state and ref
     mapRef.current = map;
     setMapInstance(map);
     
@@ -114,12 +112,6 @@ const MapView: React.FC<MapViewProps> = ({
         setIsDragging(false);
       });
       
-      map.options.inertia = false;
-      map.options.closePopupOnClick = false;
-      map.options.zoomAnimation = false;
-      map.options.fadeAnimation = false;
-      map.options.markerZoomAnimation = false;
-      
       if (L.Popup) {
         L.Popup.prototype.options.autoPan = false;
         L.Popup.prototype.options.autoClose = false;
@@ -127,7 +119,7 @@ const MapView: React.FC<MapViewProps> = ({
     } catch (error) {
       console.error("Error al configurar eventos del mapa:", error);
     }
-  }, []);
+  };
 
   return (
     <div 
@@ -149,7 +141,11 @@ const MapView: React.FC<MapViewProps> = ({
           zoomControl={false}
           attributionControl={false}
           className="z-10 h-full w-full"
-          whenCreated={handleMapCreated}
+          ref={(map) => {
+            if (map) {
+              handleMapReady(map);
+            }
+          }}
           scrollWheelZoom={true}
           doubleClickZoom={false}
           dragging={true}
