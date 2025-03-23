@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import IncidentDetail from '@/components/IncidentDetail';
-import CommentSection, { Comment } from '@/components/CommentSection';
+import { Comment } from '@/components/CommentSection';
 import { Incident } from '@/components/IncidentCard';
 
 // Mock data for the incident - in a real app, you would fetch this from an API
@@ -68,13 +68,6 @@ const IncidentDetailPage = () => {
           incident={incident} 
           comments={comments} 
         />
-        
-        <div className="mt-8">
-          <CommentSection 
-            incidentId={incidentId} 
-            comments={comments} 
-          />
-        </div>
       </main>
     </div>
   );
