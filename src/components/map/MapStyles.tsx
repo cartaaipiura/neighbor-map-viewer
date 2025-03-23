@@ -44,6 +44,13 @@ const MapStyles: React.FC = () => {
       overflow: hidden;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .leaflet-popup-content-wrapper:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
     }
     
     .leaflet-popup-content {

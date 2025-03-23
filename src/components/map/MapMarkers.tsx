@@ -4,6 +4,7 @@ import { Marker, Popup } from 'react-leaflet';
 import { Incident } from '../incidents/types';
 import IncidentCard from '../IncidentCard';
 import { createCustomIcon } from './MapMarkerUtils';
+import { useNavigate } from 'react-router-dom';
 
 interface MapMarkersProps {
   incidents: Incident[];
@@ -11,6 +12,16 @@ interface MapMarkersProps {
 }
 
 const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) => {
+  const navigate = useNavigate();
+
+  const handleIncidentCardClick = (incident: Incident) => {
+    // Primero llamamos al controlador de clics original
+    onIncidentClick(incident);
+    
+    // Luego navegamos a la página de detalle
+    navigate(`/incident/${incident.id}`);
+  };
+
   return (
     <>
       {incidents.map((incident) => (
@@ -36,7 +47,6 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
                 const currentCenter = map.getCenter();
                 const currentZoom = map.getZoom();
                 
-                // Immediately restore the view to prevent recentering
                 setTimeout(() => {
                   map.setView(currentCenter, currentZoom, {
                     animate: false,
@@ -60,11 +70,15 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
               onClick={(e) => {
                 // Prevent event bubbling to map
                 e.stopPropagation();
+                
+                // Navigate to incident detail
+                handleIncidentCardClick(incident);
               }}
               onMouseDown={(e) => {
                 // Also prevent mousedown events from bubbling
                 e.stopPropagation();
               }}
+              className="cursor-pointer"
             >
               <IncidentCard incident={incident} variant="map" />
             </div>
