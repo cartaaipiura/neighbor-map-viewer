@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-import { Incident } from '@/components/incidents/types';
+import { Incident, IncidentCategory, IncidentStatus } from '@/components/incidents/types';
 
 const API_URL = 'https://ff0a-179-7-82-193.ngrok-free.app';
 
@@ -64,9 +64,8 @@ const mapResponseToIncident = (item: any): Incident => {
 };
 
 // Map API categories to our application categories
-const mapCategory = (apiCategory: string): string => {
-  const categoryMap: Record<string, string> = {
-    // Add mappings based on API response
+const mapCategory = (apiCategory: string): IncidentCategory => {
+  const categoryMap: Record<string, IncidentCategory> = {
     'road': 'road',
     'lighting': 'lighting',
     'trash': 'trash',
@@ -80,9 +79,8 @@ const mapCategory = (apiCategory: string): string => {
 };
 
 // Map API status to our application status
-const mapStatus = (apiStatus: string): string => {
-  const statusMap: Record<string, string> = {
-    // Add mappings based on API response
+const mapStatus = (apiStatus: string): IncidentStatus => {
+  const statusMap: Record<string, IncidentStatus> = {
     'active': 'active',
     'in_progress': 'in_progress',
     'resolved': 'resolved'
