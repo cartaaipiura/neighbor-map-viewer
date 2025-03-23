@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import IncidentDetail from '@/components/IncidentDetail';
-import { Comment } from '@/components/CommentSection';
+import { Comment } from '@/components/comments/types';
 import { Incident } from '@/components/IncidentCard';
 
 // Mock data for the incident - in a real app, you would fetch this from an API

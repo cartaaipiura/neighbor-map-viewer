@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Incident } from './IncidentCard';
 import VoteButton from './VoteButton';
-import CommentSection, { Comment } from './CommentSection';
+import CommentSection from './CommentSection';
+import { Comment } from './comments/types';
 import { MapPin, Calendar, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -88,7 +88,6 @@ const IncidentDetail: React.FC<IncidentDetailProps> = ({
   return (
     <div className={cn("animate-fade-in", className)}>
       <div className="max-w-4xl mx-auto">
-        {/* Back button */}
         <button
           onClick={goBack}
           className="flex items-center text-vecino-gray-600 hover:text-vecino-blue transition-colors mb-6"
@@ -97,9 +96,7 @@ const IncidentDetail: React.FC<IncidentDetailProps> = ({
           <span>Volver</span>
         </button>
         
-        {/* Main content */}
         <div className="space-y-8">
-          {/* Header */}
           <div className="bg-white rounded-xl shadow-subtle border border-vecino-gray-200 p-6 space-y-4 animate-slide-up" style={{ animationDelay: '100ms' }}>
             <div className="flex flex-wrap gap-2 justify-between items-start">
               <div className="space-y-1">
@@ -144,7 +141,6 @@ const IncidentDetail: React.FC<IncidentDetailProps> = ({
             )}
           </div>
           
-          {/* Voting section */}
           {incident.status === 'active' && (
             <div className="bg-white rounded-xl shadow-subtle border border-vecino-gray-200 p-6 animate-slide-up" style={{ animationDelay: '200ms' }}>
               <h3 className="text-xl font-semibold text-vecino-gray-900 mb-4">
@@ -161,7 +157,6 @@ const IncidentDetail: React.FC<IncidentDetailProps> = ({
             </div>
           )}
           
-          {/* Comments section */}
           <div className="animate-slide-up" style={{ animationDelay: '300ms' }}>
             <CommentSection
               incidentId={incident.id}
