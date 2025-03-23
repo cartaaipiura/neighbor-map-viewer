@@ -1,5 +1,5 @@
 
-import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
+import React, { Suspense, useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import MapControls from './MapControls';
@@ -26,17 +26,6 @@ const MapEventHandler = () => {
       console.log("Popup abierto, previniendo autopan");
       if (e.popup && typeof e.popup.options !== 'undefined') {
         e.popup.options.autoPan = false;
-      }
-      
-      if (map) {
-        const currentCenter = map.getCenter();
-        const currentZoom = map.getZoom();
-        
-        setTimeout(() => {
-          map.setView(currentCenter, currentZoom, {
-            animate: false
-          });
-        }, 0);
       }
     },
     popupclose: (e) => {
@@ -89,25 +78,29 @@ const MapView: React.FC<MapViewProps> = ({
     }
   }, []);
 
-  const handleMapReady = (map: L.Map) => {
+  const handleMapReady = (mapEl: L.Map) => {
     console.log("Mapa creado exitosamente");
-    map.options.closePopupOnClick = false;
-    map.options.inertia = false;
-    map.options.zoomAnimation = false;
-    map.options.fadeAnimation = false;
-    map.options.markerZoomAnimation = false;
+    
+    if (!mapEl) return;
+    
+    // Configure map options
+    mapEl.options.closePopupOnClick = false;
+    mapEl.options.inertia = false;
+    mapEl.options.zoomAnimation = false;
+    mapEl.options.fadeAnimation = false;
+    mapEl.options.markerZoomAnimation = false;
 
-    // Also update our state and ref
-    mapRef.current = map;
-    setMapInstance(map);
+    // Update state and ref
+    mapRef.current = mapEl;
+    setMapInstance(mapEl);
     
     try {
-      map.on('dragstart', () => {
+      mapEl.on('dragstart', () => {
         console.log("Inicio de arrastre del mapa");
         setIsDragging(true);
       });
       
-      map.on('dragend', () => {
+      mapEl.on('dragend', () => {
         console.log("Fin de arrastre del mapa");
         setIsDragging(false);
       });

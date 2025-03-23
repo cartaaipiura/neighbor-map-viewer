@@ -40,20 +40,8 @@ const MapMarkers: React.FC<MapMarkersProps> = ({ incidents, onIncidentClick }) =
               // Call the incident click handler
               onIncidentClick(incident);
               
-              // Prevent the marker click from causing any map movement
-              if (e.target && e.target._map) {
-                const map = e.target._map;
-                // Store current center and zoom
-                const currentCenter = map.getCenter();
-                const currentZoom = map.getZoom();
-                
-                setTimeout(() => {
-                  map.setView(currentCenter, currentZoom, {
-                    animate: false,
-                    duration: 0
-                  });
-                }, 0);
-              }
+              // We'll skip trying to manipulate the map view to prevent errors
+              // This was causing the "_leaflet_pos" undefined error
             }
           }}
         >
